@@ -5,15 +5,20 @@ import tagpy
 import glob
 import os
 import sys
-
+import re
 
 
 def setNameToFileByTag(file_path, music_format):
     file_with_tags = tagpy.FileRef(file_path)
-    track_nr =  str(file_with_tags.tag().track)
+    track_nr = ""
+    if file_with_tags.tag().track < 10:
+        track_nr = "0"
+    track_nr += str(file_with_tags.tag().track)
     track_title = file_with_tags.tag().title
     track_artist = file_with_tags.tag().artist
     new_file_name =  track_nr + "." + track_artist + "- " + track_title + "." + music_format
+    # remove forbidden chars
+    new_file_name = re.sub(r'[>|<|\|/|:|*|||?|$|!]',r'',new_file_name)
     try:    
         os.rename(file_path, new_file_name)
         print file_path
